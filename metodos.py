@@ -108,12 +108,43 @@ def secante(xn,fn,error):
         x=xAnt-h
         resfx_h=eval(Fnx)
         x=xAnt-((2*h*resfn)/(resfxh-resfx_h))
-        errorTemp=abs(xAnt-x)    
+        errorTemp=abs(xAnt-x)
         historial.append([x,errorTemp])
         if(errorTemp<error):
             break  
         cont+=1
     return x,historial
+
+def secante2(xn,fn,error):
+    errorTemp=1000000
+    maxIt=100
+    cont=0
+    h=error/10
+    xAnt=xn
+    prs=Parse()
+    prs.setEc(fn)
+    x=xn
+    historial=[]
+    historial.append([x,0.0])
+    while(errorTemp>error and maxIt>cont):
+        prs.addVariable("x",x)
+        resfn=prs.evaluate()
+        x=xAnt+h
+        prs.addVariable("x",x)
+        resfxh=prs.evaluate()
+        x=xAnt-h
+        prs.addVariable("x",x)
+        resfx_h=prs.evaluate()
+        x=xAnt-((2*h*resfn)/(resfxh-resfx_h))
+        errorTemp=abs(xAnt-x)
+        xAnt=x
+        historial.append([x,errorTemp])
+        if(errorTemp<error):
+            break  
+        cont+=1
+    return x,historial
+
+
 
 def lagrange(xLista,yLista,punto):
     prodStr=""
@@ -136,14 +167,17 @@ def lagrange(xLista,yLista,punto):
     return prodStr,res 
 
 #graph(resp[0],range(0,10))
-def graph(formula,puntos,x_range):
-    for i in formula:  
-        x = np.array(x_range)  
-        y = eval(i)
-        plt.plot(x, y)
-    for i in puntos:
-        plt.plot(i[0],i[1], marker="o")
-
+def graph(formula,i,f):
+    prs=Parse()
+    x = np.linspace(i,f,100)
+    prs.setEc(formula)
+    y=[]
+    for i in x:  
+        prs.addVariable("x",i)
+        yT=prs.evaluate()
+        #print(yT)
+        y.append(prs.evaluate()) 
+    plt.plot(x, y)
     plt.show()
 
 def imagenNR(LFn,Lx):
@@ -187,7 +221,8 @@ def errorNR(Lx,TLx):
     return sqrt(err)
 
 def newtonRaphsonG(LFn,Lx,error):
-    maxIt=500
+    print("NewtonRG")
+    maxIt=10
     tparse=Parse()
     TLx=[]
     errorAnt=0
@@ -226,4 +261,6 @@ def selectMetodA(op,xn,fn,dfn,error):
         return secante(xn,fn,error)
  
     
+
+
 
