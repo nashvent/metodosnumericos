@@ -4,15 +4,25 @@ import numpy as np
 import matplotlib.pyplot as plt 
 import matrix 
 from parse import Parse
+plt.style.use('seaborn-whitegrid')
 def ln(x):
     return log(x)
 def sen(x):
     return sin(x)
 
-
+def bolzano(fn,a,b):
+    prs=Parse()
+    prs.setEc(fn)
+    prs.addVariable("x",a)
+    evA=prs.evaluate()
+    prs.addVariable("x",b)
+    evB=prs.evaluate()
+    if((evA*evB)<1):
+        return True
+    return False
 
 def biseccion(a,b,fn,error):
-    errorTemp=0.0
+    errorTemp=0
     maxIt=100
     cont=0
     code = parser.expr(fn).compile()    
@@ -68,6 +78,25 @@ def falsapos(a,b,fn,error):
         cont+=1
     return x,historial
 
+def puntofijo(xn,fn,error):
+    maxIt=100
+    historial=[]
+    xr=xn
+    prs=Parse()
+    fn=fn+"+x"
+    prs.setEc(fn)
+    historial.append([xn,0])
+    for i in range(maxIt):
+        xAnt=xr
+        prs.addVariable("x",xr)
+        xr=prs.evaluate()
+        print("xr",xr)
+        errorTemp=abs(xAnt-xr)
+        historial.append([xr,errorTemp])
+        if(errorTemp<error):
+            break
+    return xr,historial
+
 def newton(xn,fn,dfn,error):
     errorTemp=0.0
     maxIt=100
@@ -90,32 +119,8 @@ def newton(xn,fn,dfn,error):
         cont+=1
     return x,historial
 
-def secante(xn,fn,error):
-    errorTemp=1000000
-    maxIt=100
-    cont=0
-    h=error/10
-    Fnx = parser.expr(fn).compile()
-    xAnt=0
-    x=xn
-    historial=[]
-    historial.append([x,0.0])
-    while(errorTemp>error and maxIt>cont):
-        xAnt=x
-        resfn=eval(Fnx)
-        x=xAnt+h
-        resfxh=eval(Fnx)
-        x=xAnt-h
-        resfx_h=eval(Fnx)
-        x=xAnt-((2*h*resfn)/(resfxh-resfx_h))
-        errorTemp=abs(xAnt-x)
-        historial.append([x,errorTemp])
-        if(errorTemp<error):
-            break  
-        cont+=1
-    return x,historial
 
-def secante2(xn,fn,error):
+def secante(xn,fn,error):
     errorTemp=1000000
     maxIt=100
     cont=0
@@ -123,22 +128,19 @@ def secante2(xn,fn,error):
     xAnt=xn
     prs=Parse()
     prs.setEc(fn)
-    x=xn
     historial=[]
-    historial.append([x,0.0])
+    historial.append([xn,0.0])
     while(errorTemp>error and maxIt>cont):
-        prs.addVariable("x",x)
+        prs.addVariable("x",xAnt)
         resfn=prs.evaluate()
-        x=xAnt+h
-        prs.addVariable("x",x)
+        prs.addVariable("x",xAnt+h)
         resfxh=prs.evaluate()
-        x=xAnt-h
-        prs.addVariable("x",x)
+        prs.addVariable("x",xAnt-h)
         resfx_h=prs.evaluate()
         x=xAnt-((2*h*resfn)/(resfxh-resfx_h))
         errorTemp=abs(xAnt-x)
+        historial.append([xAnt,errorTemp])
         xAnt=x
-        historial.append([x,errorTemp])
         if(errorTemp<error):
             break  
         cont+=1
@@ -166,18 +168,25 @@ def lagrange(xLista,yLista,punto):
     res= (eval(code))
     return prodStr,res 
 
+def getY(formula,x):
+    prs=Parse()
+    y=[]
+    prs.setEc(formula)
+    for i in x:
+        prs.addVariable("x",i)
+        yT=prs.evaluate()
+        #print(yT)
+        y.append(yT)
+    return y
+
 #graph(resp[0],range(0,10))
 def graph(formula,i,f):
     prs=Parse()
     x = np.linspace(i,f,100)
     prs.setEc(formula)
-    y=[]
-    for i in x:  
-        prs.addVariable("x",i)
-        yT=prs.evaluate()
-        #print(yT)
-        y.append(prs.evaluate()) 
+    y=getY(formula,x) 
     plt.plot(x, y)
+    plt.axis([i, f, i+1, f])
     plt.show()
 
 def imagenNR(LFn,Lx):
@@ -245,7 +254,9 @@ def newtonRaphsonG(LFn,Lx,error):
             return LxAnt
         if(errorTemp<error):
             break       
-        
+    
+    #graphList(LFn,[],-2,2)
+
     return Lx
 
 def selectMetodC(op,a,b,fn,error):
@@ -259,8 +270,42 @@ def selectMetodA(op,xn,fn,dfn,error):
         return newton(xn,fn,dfn,error)
     elif(op==1):
         return secante(xn,fn,error)
- 
+    elif(op==2):
+        return puntofijo(xn,fn,error)
+
+def graphList(fList,pList,pi,pf):
+    pi=pi-2
+    pf=pf+2
+    xList = np.linspace(pi-10,pf+10,100)
+    for i in range(len(fList)):
+        yList=getY(fList[i],xList)
+        plt.plot(xList, yList)
+    for p in pList:
+        plt.plot(p[0],p[1],'ro')
+    plt.axis([pi, pf, pi, pf])
+    plt.show() 
     
+def interseccion(fn1,fn2,pi,pf,error):
+    partes=10
+    tamRango=abs(pf-pi)
+    sizePart=tamRango/10
+    tempPi=pi
+    fnT=fn1+"-("+fn2+")"
+    xInter=[]
+    #print(fnT)
+    for i in range(partes-1):
+        nTempPi=tempPi+sizePart
+        if(bolzano(fnT,tempPi,nTempPi)):
+            result=secante(tempPi,fnT,error)
+            xInter.append(result[0])       
+        tempPi=nTempPi
+    yInter=getY(fn1,xInter)
+    puntosInter=[]
+    for cnt in range(len(xInter)):
+        puntosInter.append([xInter[cnt],yInter[cnt]])
+    fList=[fn1,fn2]
+    graphList(fList,puntosInter,pi,pf)
+    return puntosInter
 
-
-
+    
+    

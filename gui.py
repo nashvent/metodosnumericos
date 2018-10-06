@@ -34,12 +34,15 @@ class inicio(QDialog):
         self.botonMetodAbiertos.clicked.connect(self.calcMetodosAbiertos)
         self.botonMatriz.clicked.connect(self.calcMatrices)
         self.botonLagrange.clicked.connect(self.calcLagrange)
+        self.botonLagrangeG.clicked.connect(self.graphLagrange)
+        self.botonInter.clicked.connect(self.interSec)
         self.pushButtonNR.clicked.connect(self.calcNewtonRaphson)
         self.spinBox.valueChanged.connect(self.changeSpin)
         self.spinBox_2.valueChanged.connect(self.changeSpin2)
         self.spinBox_3.valueChanged.connect(self.changeSpin3)
         self.spinBox_4.valueChanged.connect(self.changeSpin4)
         self.spinBoxNR.valueChanged.connect(self.changeSpinNR)
+        self.spinBoxLagrange.valueChanged.connect(self.changeSpinLagrange)
     def calcTaylor(self):
         op=self.comboFunc.currentText() 
         x=float(self.lineAngulo.text())
@@ -105,9 +108,24 @@ class inicio(QDialog):
             self.lineEdit_5.setText(str(round(lineDet,2)))
             
         print("Calc matrices")
-    def calcLagrange(self):
-        print("Lagrange")
 
+    def calcLagrange(self):
+        xList=[]
+        yList=[]
+        for i in range(self.tableLagrange.columnCount()):
+            xList.append(float(self.tableLagrange.item(0,i).text()))
+            yList.append(float(self.tableLagrange.item(1,i).text()))
+        punto=float(self.lineLagrange.text())
+
+        resp=metodos.lagrange(xList,yList,punto)
+        self.lineLagrange_2.setText(str(round(resp[1],2) ))
+        self.textEditLagrange.setText(str(resp[0]))
+    
+    def graphLagrange(self):
+        fnc=self.textEditLagrange.toPlainText()
+        pi=float(self.lineEditPiLagrange.text())
+        pf=float(self.lineEditPfLagrange.text())
+        metodos.graph(fnc,pi-1,pf+1)
     def calcNewtonRaphson(self):
         arrFn=[]
         arrLx=[]
@@ -121,7 +139,14 @@ class inicio(QDialog):
         for j in range(len(resp)):
             self.tableWidgetNR2.setItem(0,j,QTableWidgetItem(str(resp[j])))
 
-        
+    def interSec(self):
+        fnA=self.fnALineEdit.text()
+        fnB=self.fnBLineEdit.text()
+        pi=self.piLine.text()
+        pf=self.pfLine.text()
+        error=self.errorLineI.text()
+        resp=metodos.interseccion(fnA,fnB,float(pi),float(pf),float(error))
+        MatrixToTable(resp,self.tableInterseccion)
 
     def changeSpin(self):
         self.matrizA.setRowCount(self.spinBox.value())
@@ -131,7 +156,8 @@ class inicio(QDialog):
         self.matrizB.setRowCount(self.spinBox_3.value())
     def changeSpin4(self):
         self.matrizB.setColumnCount(self.spinBox_4.value())
-
+    def changeSpinLagrange(self):
+        self.tableLagrange.setColumnCount(self.spinBoxLagrange.value())
     def changeSpinNR(self):
         self.tableWidgetNR.setColumnCount(self.spinBoxNR.value())
         self.tableWidgetNR2.setColumnCount(self.spinBoxNR.value())    

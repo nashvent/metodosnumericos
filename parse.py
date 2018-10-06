@@ -11,6 +11,7 @@ class Parse:
     def evaluate(self):
         var=self.variables
         tempec=self.cleanStringEc()
+        
         code = parser.expr(tempec).compile()
         return (eval(code)) 
 
