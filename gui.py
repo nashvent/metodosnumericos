@@ -10,10 +10,11 @@ import matrix as mtx
 
 def MatrixToTable(matrix,tableView):
     tableView.setRowCount(len(matrix))
-    tableView.setColumnCount(len(matrix[0]))
-    for i,row in enumerate(matrix):
-        for j,val in enumerate(row):
-            tableView.setItem(i,j,QTableWidgetItem(str(val)))
+    if(len(matrix)):
+        tableView.setColumnCount(len(matrix[0]))
+        for i,row in enumerate(matrix):
+            for j,val in enumerate(row):
+                tableView.setItem(i,j,QTableWidgetItem(str(val)))
 
 def TableToMatrix(tableView):
     matrix=[]

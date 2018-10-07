@@ -11,13 +11,15 @@ def sen(x):
     return sin(x)
 
 def bolzano(fn,a,b):
+
     prs=Parse()
     prs.setEc(fn)
     prs.addVariable("x",a)
     evA=prs.evaluate()
     prs.addVariable("x",b)
     evB=prs.evaluate()
-    if((evA*evB)<1):
+    print("bolzano val",evA,evB)
+    if((evA*evB)<0):
         return True
     return False
 
@@ -137,6 +139,9 @@ def secante(xn,fn,error):
         resfxh=prs.evaluate()
         prs.addVariable("x",xAnt-h)
         resfx_h=prs.evaluate()
+        if((resfxh-resfx_h)==0):
+            print("division entre zero")
+            break
         x=xAnt-((2*h*resfn)/(resfxh-resfx_h))
         errorTemp=abs(xAnt-x)
         historial.append([xAnt,errorTemp])
@@ -276,7 +281,7 @@ def selectMetodA(op,xn,fn,dfn,error):
 def graphList(fList,pList,pi,pf):
     pi=pi-2
     pf=pf+2
-    xList = np.linspace(pi-10,pf+10,100)
+    xList = np.linspace(pi,pf,100)
     for i in range(len(fList)):
         yList=getY(fList[i],xList)
         plt.plot(xList, yList)
@@ -298,7 +303,10 @@ def interseccion(fn1,fn2,pi,pf,error):
         if(bolzano(fnT,tempPi,nTempPi)):
             result=secante(tempPi,fnT,error)
             xInter.append(result[0])       
+        else:
+            print("No cumple bolzano")
         tempPi=nTempPi
+        
     yInter=getY(fn1,xInter)
     puntosInter=[]
     for cnt in range(len(xInter)):
@@ -307,5 +315,7 @@ def interseccion(fn1,fn2,pi,pf,error):
     graphList(fList,puntosInter,pi,pf)
     return puntosInter
 
-    
+"""def propagacion(LFn,Lerr,ec):
+    prs=Parse()
+"""
     
