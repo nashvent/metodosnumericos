@@ -43,3 +43,18 @@ def simpson(a,b,fn,n):
     resp=(h/3)*(fa+fb+(2*parSum)+(4*imparSum))
     return resp
 
+def eulerSimple(df,xn,yn,h,xf):
+    prs=Parse()
+    prs.setEc(df)
+    h=float(h)
+    xt=xn
+    yt=yn
+    while(xt<xf):
+        prs.addVariable("x",xt)
+        prs.addVariable("y",yt)
+        yt=yt+h*(prs.evaluate())
+        print(yt)
+        xt=round(xt+h,15)
+        
+    return yt
+
