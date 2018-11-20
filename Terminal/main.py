@@ -29,8 +29,7 @@ class inicio(QMainWindow):
         if(tipo==0):
             if(comando=="clear"):
                 self.plainTextEdit.clear()
-                return
-            
+                return   
             self.prs.setEc(comando)
             try:
                 res=self.prs.evaluate()
@@ -71,7 +70,7 @@ class inicio(QMainWindow):
             self.tableHistorial.setItem(it,0, QTableWidgetItem(str(comd)))
             it+=1
         
-"""    def keyPressEvent(self, event):
+    def keyPressEvent(self, event):
         key = event.key()
         print("press",self.posicionHistorial)
                     
@@ -84,15 +83,14 @@ class inicio(QMainWindow):
                     
                 
             if(key==16777237):
-                if(self.posicionHistorial+1<len(self.historial)):
-                    self.posicionHistorial=self.posicionHistorial+1
+                self.posicionHistorial=self.posicionHistorial+1
+                if(self.posicionHistorial<len(self.historial)):
                     print("abajo",self.posicionHistorial)
                     self.lineEdit.setText(self.historial[self.posicionHistorial])
                     
                 else:
-
+                    self.posicionHistorial=len(self.historial)
                     self.lineEdit.setText("")
-"""
                 
         
 #Instancia para iniciar una aplicación
