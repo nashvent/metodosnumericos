@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import matrix 
 from parse import Parse
 
+
 def trapecio(a,b,fn,n):
     h=(b-a)/n
     prs=Parse()
