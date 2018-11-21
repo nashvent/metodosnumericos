@@ -64,32 +64,6 @@
        </column>
       </widget>
      </item>
-     <item>
-      <widget class="QTableWidget" name="tableHistorial">
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="editTriggers">
-        <set>QAbstractItemView::DoubleClicked</set>
-       </property>
-       <property name="rowCount">
-        <number>0</number>
-       </property>
-       <attribute name="horizontalHeaderStretchLastSection">
-        <bool>true</bool>
-       </attribute>
-       <attribute name="verticalHeaderVisible">
-        <bool>false</bool>
-       </attribute>
-       <column>
-        <property name="text">
-         <string>Historial</string>
-        </property>
-       </column>
-      </widget>
-     </item>
     </layout>
    </widget>
    <widget class="QGroupBox" name="groupBox_2">

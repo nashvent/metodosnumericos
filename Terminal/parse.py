@@ -1,6 +1,6 @@
 from math import *
 import parser
-class Parse:
+class ParseConsola:
     variables={}
     ecuation=""
     def addVariable(self,vname,vval):
