@@ -5,7 +5,48 @@ import matplotlib.pyplot as plt
 import matrix 
 from mparse import SimpleParse 
 plt.style.use('seaborn-whitegrid')
-
+"""
+def puntofijo(xn,fn,error):
+    maxIt=100
+    historial=[]
+    xr=xn
+    prs=SimpleParse()
+    fn=fn+"+x"
+    prs.setEc(fn)
+    historial.append([xn,0])
+    for i in range(maxIt):
+        xAnt=xr
+        prs.addVariable("x",xr)
+        xr=prs.evaluate()
+        print("xr",xr)
+        errorTemp=abs(xAnt-xr)
+        historial.append([xr,errorTemp])
+        if(errorTemp<error):
+            break
+    return xr,historial
+def newton(xn,fn,dfn,error):
+    errorTemp=0.0
+    maxIt=100
+    cont=0
+    Fnx = parser.expr(fn).compile()
+    DFnx = parser.expr(dfn).compile()    
+    xAnt=xn
+    x=xn
+    historial=[]
+    historial.append([x,0.0])
+    while( maxIt>cont):
+        xAnt=x
+        resfn=eval(Fnx)
+        resdnf=eval(DFnx)
+        x=x-(resfn/resdnf)
+        errorTemp=abs(xAnt-x)    
+        historial.append([x,errorTemp])
+        if(errorTemp<error):
+            break      
+        cont+=1
+    return x,historial
+"""
+getSign = lambda a: (a>0) - (a<0)
 
 def bolzano(fn,a,b):
     prs=SimpleParse()
@@ -75,48 +116,6 @@ def falsapos(a,b,fn,error):
         cont+=1
     return xn,historial
 
-"""
-def puntofijo(xn,fn,error):
-    maxIt=100
-    historial=[]
-    xr=xn
-    prs=SimpleParse()
-    fn=fn+"+x"
-    prs.setEc(fn)
-    historial.append([xn,0])
-    for i in range(maxIt):
-        xAnt=xr
-        prs.addVariable("x",xr)
-        xr=prs.evaluate()
-        print("xr",xr)
-        errorTemp=abs(xAnt-xr)
-        historial.append([xr,errorTemp])
-        if(errorTemp<error):
-            break
-    return xr,historial
-def newton(xn,fn,dfn,error):
-    errorTemp=0.0
-    maxIt=100
-    cont=0
-    Fnx = parser.expr(fn).compile()
-    DFnx = parser.expr(dfn).compile()    
-    xAnt=xn
-    x=xn
-    historial=[]
-    historial.append([x,0.0])
-    while( maxIt>cont):
-        xAnt=x
-        resfn=eval(Fnx)
-        resdnf=eval(DFnx)
-        x=x-(resfn/resdnf)
-        errorTemp=abs(xAnt-x)    
-        historial.append([x,errorTemp])
-        if(errorTemp<error):
-            break      
-        cont+=1
-    return x,historial
-"""
-
 def secante(xn,fn,error):
     errorTemp=1000000
     maxIt=100
@@ -146,6 +145,20 @@ def secante(xn,fn,error):
         cont+=1
     return x,historial
 
+def polyroot(raices):
+    rpoly=""
+    for idx in range(len(raices)):
+        cval=raices[idx]
+        if(cval>0):
+            csign="-"
+        else:
+            csign="+"
+            cval=cval*(-1)
+        
+        rpoly=rpoly+"(x"+csign+str(cval)+")"
+        if(idx+1<len(raices)):
+            rpoly=rpoly+"*"
+    return rpoly
 
 
 def lagrange(xLista,yLista):
@@ -176,7 +189,6 @@ def getY(formula,x):
         y.append(yT)
     return y
 
-#graph(resp[0],range(0,10))
 def graph(formula,i,f):
     prs=SimpleParse()
     x = np.linspace(i,f,100)
@@ -218,6 +230,7 @@ def jacobiana(LFn,Lx,err):
     
     result=Jmatrix
     return result
+
 def errorNR(Lx,TLx):
     err=0
     i=0
@@ -255,7 +268,7 @@ def newtonRaphsonG(LFn,Lx,error):
     #graphList(LFn,[],-2,2)
 
     return Lx
-
+"""
 def selectMetodC(op,a,b,fn,error):
     if(op==0):
         return biseccion(a,b,fn,error)
@@ -269,7 +282,7 @@ def selectMetodA(op,xn,fn,dfn,error):
         return secante(xn,fn,error)
     elif(op==2):
         return puntofijo(xn,fn,error)
-
+"""
 def graphList(fList,pList,pi,pf):
     pi=pi-2
     pf=pf+2
