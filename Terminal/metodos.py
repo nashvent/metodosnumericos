@@ -160,7 +160,6 @@ def polyroot(raices):
             rpoly=rpoly+"*"
     return rpoly
 
-
 def lagrange(xLista,yLista):
     prodStr=""
     for i in range (len(yLista)):
@@ -198,38 +197,41 @@ def graph(formula,i,f):
     plt.axis([i, f, i+1, f])
     plt.show()
 
-def imagenNR(LFn,Lx):
+def listToDict(Ln,Lv):
+    dicc={}
+    for i in range(len(Ln)):
+        dicc[str(Ln[i])]=Lv[i]
+    return dicc
+
+def imagenNR(Lxn,LFn,Lx):
     tparse=SimpleParse()
     LFxn=[]
+    tparse.addVarFromList(listToDict(Lxn,Lx))
     for i in range(len(LFn)):
         tparse.setEc(LFn[i])
-        tparse.addVarFromList(Lx)
         LFxn.append(tparse.evaluate())
     return LFxn
 
-def jacobiana(LFn,Lx,err):
+def jacobiana(NLx,LFn,Lx,err):
     tparse=SimpleParse()
     Jmatrix=[]
     h=err/10
-    TLx=[]
     for i in range(len(LFn)):
         mTemp=[]
         for j in range(len(Lx)):
             TLx=list(Lx)
             TLx[j]=Lx[j]+h
-            tparse.setEc(LFn[i])
-            tparse.addVarFromList(TLx)
-            rH=tparse.evaluate()
+            tparse.setEc(LFn[i])       
+            tparse.addVarFromList(listToDict(NLx,TLx))
+            rH=float(tparse.evaluate())
             TLx=list(Lx)
             TLx[j]=Lx[j]-h
-            tparse.addVarFromList(TLx)
+            tparse.addVarFromList(listToDict(NLx,TLx))
             r_H=tparse.evaluate()
             DR=(rH-r_H)/(2*(h*100))
-            mTemp.append(DR)       
+            mTemp.append(DR)
         Jmatrix.append(mTemp) 
-    
-    result=Jmatrix
-    return result
+    return Jmatrix
 
 def errorNR(Lx,TLx):
     err=0
@@ -239,34 +241,29 @@ def errorNR(Lx,TLx):
         err+=pow(tmp,2)
     return sqrt(err)
 
-def newtonRaphsonG(LFn,Lx,error):
-    print("NewtonRG")
-    maxIt=10
-    tparse=SimpleParse()
-    TLx=[]
+# (['x','y'],['x*y','x**2+y**2'],[2,4])
+def newtonRaphsonG(NLx,LFn,Lx,err):
+    maxIt=100
     errorAnt=0
     errorTemp=0
     contErr=0
     LxAnt=[]
     for i in range(maxIt):
-        TLx=Lx
-        jaco=jacobiana(LFn,Lx,error)
-        LFxn=imagenNR(LFn,Lx)    
+        TLx=list(Lx)
+        jaco=jacobiana(NLx,LFn,Lx,err)
+        LFxn=imagenNR(NLx,LFn,Lx)    
         respTemp=matrix.multVectorMatrix(jaco,LFxn)
         LxAnt=Lx
         Lx=matrix.restaArray(Lx,respTemp)
         print("Lx",Lx)
         errorAnt=errorTemp
         errorTemp=errorNR(TLx,Lx)
-        print("error",errorTemp)
         if(abs(errorAnt-errorTemp)>1):
             print("Divergente")
             return LxAnt
-        if(errorTemp<error):
+        if(errorTemp<err):
             break       
     
-    #graphList(LFn,[],-2,2)
-
     return Lx
 """
 def selectMetodC(op,a,b,fn,error):
@@ -320,7 +317,81 @@ def interseccion(fn1,fn2,pi,pf,error):
     graphList(fList,puntosInter,pi,pf)
     return puntosInter
 
-"""def propagacion(LFn,Lerr,ec):
-    prs=SimpleParse()
-"""
     
+
+def trapecio(fn,a,b,n):
+    h=(b-a)/n
+    prs=SimpleParse()
+    prs.setEc(fn)
+    i=a+h
+    sum=0
+    while(i<b):
+        prs.addVariable("x",i)
+        sum+=prs.evaluate()
+        i+=h
+    prs.addVariable("x",a)
+    fa=prs.evaluate()
+    prs.addVariable("x",b)
+    fb=prs.evaluate()
+    resp=h*( ((fa+fb)/2) + sum)
+    return resp
+
+def simpson1(fn,a,b,n):
+    h=(b-a)/(n)
+    prs=SimpleParse()
+    prs.setEc(fn)
+    parSum=0
+    imparSum=0
+    i=a+h
+    cont=1
+    while (i<b):
+        prs.addVariable("x",i)
+        if(cont%2==0):
+            parSum+=prs.evaluate()
+        else:
+            imparSum+=prs.evaluate()
+        cont+=1
+        i+=h
+        i=round(i,15)
+    prs.addVariable("x",a)
+    fa=prs.evaluate()
+    prs.addVariable("x",b)
+    fb=prs.evaluate()
+    resp=(h/3)*(fa+fb+(2*parSum)+(4*imparSum))
+    return resp
+
+def simpson2(fn,a,b):
+    h=(b-a)/3
+    prs=SimpleParse()
+    prs.setEc(fn)
+    x0=a
+    x1=x0+h
+    x2=x1+h
+    x3=b
+    prs.addVariable("x",x0)
+    fx0=prs.evaluate()
+    prs.addVariable("x",x1)
+    fx1=prs.evaluate()
+    prs.addVariable("x",x2)
+    fx2=prs.evaluate()
+    prs.addVariable("x",x3)
+    fx3=prs.evaluate()
+    resp=(b-a)*(fx0+(3*fx1)+(3*fx2)+fx3)*(1/8)
+    resp=round(resp,10)
+    return resp
+
+
+
+def eulerSimple(df,xn,yn,h,xf):
+    prs=SimpleParse()
+    prs.setEc(df)
+    h=float(h)
+    xt=xn
+    yt=yn
+    while(xt<xf):
+        prs.addVariable("x",xt)
+        prs.addVariable("y",yt)
+        yt=yt+h*(prs.evaluate())
+        print(yt)
+        xt=round(xt+h,15)    
+    return yt

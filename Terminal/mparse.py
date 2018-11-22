@@ -17,7 +17,7 @@ class SimpleParse:
         try:
             return eval(self.ecuation,var)
         except SyntaxError:
-                return "Error"
+            return "Error"
 
     def __init__(self):
         self.variables["e"]=e
