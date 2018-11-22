@@ -336,7 +336,7 @@ def trapecio(fn,a,b,n):
     resp=h*( ((fa+fb)/2) + sum)
     return resp
 
-def simpson1(fn,a,b,n):
+def simpson1_3(fn,a,b,n):
     h=(b-a)/(n)
     prs=SimpleParse()
     prs.setEc(fn)
@@ -360,7 +360,7 @@ def simpson1(fn,a,b,n):
     resp=(h/3)*(fa+fb+(2*parSum)+(4*imparSum))
     return resp
 
-def simpson2(fn,a,b):
+def simpson3_8(fn,a,b):
     h=(b-a)/3
     prs=SimpleParse()
     prs.setEc(fn)
@@ -380,7 +380,8 @@ def simpson2(fn,a,b):
     resp=round(resp,10)
     return resp
 
-
+#def simpson3(fn,a,b):
+#    return simpson1(fn,a,b,4)
 
 def eulerSimple(df,xn,yn,h,xf):
     prs=SimpleParse()
