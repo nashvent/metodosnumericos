@@ -7,6 +7,10 @@ import sys
 import re
 import ast
 from parse import ParseConsola
+def checkExpression(expr):
+    if(expr.isspace() or expr==''):
+        return False
+    return True
 
 def isfloat(value):
   try:
@@ -15,15 +19,11 @@ def isfloat(value):
   except ValueError:
     return False
 
-
-
 def isarray(value):
     if(value[0]=="["):
         return True
     return False
     
-
-
 class inicio(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
@@ -37,42 +37,42 @@ class inicio(QMainWindow):
 
     def pressedEnter(self):
         comando=self.lineEdit.text()
-        self.plainTextEdit.appendPlainText(comando)
-        data=self.checkComando(comando)    
-        self.addVariableLocal(data)
-        self.registroHistorial(comando)
-        res=data[1]
-        self.plainTextEdit.appendPlainText("=> "+str(res)+"\n")
-        self.lineEdit.setText("")
-        self.updateVar()
+        if checkExpression(comando):
+            self.plainTextEdit.appendPlainText(comando)
+            data=self.checkComando(comando)    
+            self.addVariableLocal(data)
+            self.registroHistorial(comando)
+            res=data[1]
+            self.plainTextEdit.appendPlainText("=> "+str(res)+"\n")
+            self.lineEdit.setText("")
+            self.updateVar()
         
     def checkComando(self,comando):
         nVar=""
         vVar=""
-        tVar=""
-        if comando.find("=") == -1:
-            print("Ejectuar")
+        tVar=''
+        indxIgual=comando.find('=')
+        
+        if indxIgual == -1:
+            #print("Ejectuar")
             vVar=self.runFunc(comando)
         else:
-            indxIgual=comando.find('=')
             nVar=comando[:indxIgual]
             vVar=comando[indxIgual+1:]
-            if(vVar[0]=="'"):
+            if comando[:6]=='error=':
+                self.prs.error=float(vVar)    
+            elif comando[:8]=="decimal=":
+                self.prs.decimal=float(vVar)
+            elif(vVar[0]=="'"):
                 tVar="string"
-                #print("es un string")
             elif(isarray(vVar)):
                 vVar=self.runFunc(vVar)
                 tVar=type(vVar).__name__
-                #print ("Es un array pero aun no se cual")
-                
             elif(isfloat(vVar)):
                 tVar="float"
-                #print("Es flotante")
-            
             else:
                 vVar=self.runFunc(vVar)
                 tVar=type(vVar).__name__
-                #print("Es funcion")
         return nVar,vVar,tVar
 
     def runFunc(self,funcion):
@@ -81,7 +81,7 @@ class inicio(QMainWindow):
         return self.prs.evaluate()
 
     def addVariableLocal(self,data):
-        if(data[0]!=''):
+        if(data[0]!='' and data[2]!=''):
             self.tipoVariablesLocales[data[0]]=data[2]
             if(data[2]=="float"):
                 self.variablesLocales[data[0]]=float(data[1])
@@ -93,6 +93,7 @@ class inicio(QMainWindow):
                 self.variablesLocales[data[0]]=data[1]   
 
     def updateVar(self):
+        print("updateVar",self.variablesLocales)
         self.tableVar.setRowCount(len(self.variablesLocales))
         it=0
         for key,val in self.variablesLocales.items():
