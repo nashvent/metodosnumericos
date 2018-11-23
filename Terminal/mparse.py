@@ -23,6 +23,7 @@ class SimpleParse:
         self.variables["e"]=e
         self.variables["ln"]=ln
         self.variables["pi"]=pi
+        self.variables["exp"]=exp
         
     def addVarFromList(self,lista):
         self.variables=lista

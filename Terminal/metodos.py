@@ -1,51 +1,10 @@
-import parser
 from math import *
 import numpy as np  
 import matplotlib.pyplot as plt 
 import matrix 
 from mparse import SimpleParse 
 plt.style.use('seaborn-whitegrid')
-"""
-def puntofijo(xn,fn,error):
-    maxIt=100
-    historial=[]
-    xr=xn
-    prs=SimpleParse()
-    fn=fn+"+x"
-    prs.setEc(fn)
-    historial.append([xn,0])
-    for i in range(maxIt):
-        xAnt=xr
-        prs.addVariable("x",xr)
-        xr=prs.evaluate()
-        print("xr",xr)
-        errorTemp=abs(xAnt-xr)
-        historial.append([xr,errorTemp])
-        if(errorTemp<error):
-            break
-    return xr,historial
-def newton(xn,fn,dfn,error):
-    errorTemp=0.0
-    maxIt=100
-    cont=0
-    Fnx = parser.expr(fn).compile()
-    DFnx = parser.expr(dfn).compile()    
-    xAnt=xn
-    x=xn
-    historial=[]
-    historial.append([x,0.0])
-    while( maxIt>cont):
-        xAnt=x
-        resfn=eval(Fnx)
-        resdnf=eval(DFnx)
-        x=x-(resfn/resdnf)
-        errorTemp=abs(xAnt-x)    
-        historial.append([x,errorTemp])
-        if(errorTemp<error):
-            break      
-        cont+=1
-    return x,historial
-"""
+
 getSign = lambda a: (a>0) - (a<0)
 
 def bolzano(fn,a,b):
@@ -60,32 +19,38 @@ def bolzano(fn,a,b):
     return False
 
 def biseccion(a,b,fn,error):
+    print("Emtro BISECCION")
     maxIt=100
     cont=0
     xn=0
     xprev=0
-    x=0.0
     historial=[]
     prs=SimpleParse()
-    prs.setEc(fn)    
+    prs.setEc(fn)
+    error=float(error)    
     while(cont<maxIt):  
         xn=(a+b)/2
+        print("xn",xn)
         prs.addVariable("x",xn)
         fxn=prs.evaluate()
         prs.addVariable("x",a)
         fa=prs.evaluate()
         nerror=abs(xn-xprev)
         historial.append([a,b,xn,nerror])
+        print("fa",fa)
+        print("fxn",fxn)
         if (fa*fxn)<0:
             b=xn
         else:
             a=xn
         
         xprev=xn
+        print("nerror",nerror)
+        print("error",error)
         if (nerror<error):
             break
         cont+=1
-    return xn,historial
+    return xn #,historial
 
 def falsapos(a,b,fn,error):
     maxIt=100
@@ -184,7 +149,6 @@ def getY(formula,x):
     for i in x:
         prs.addVariable("x",i)
         yT=prs.evaluate()
-        #print(yT)
         y.append(yT)
     return y
 
@@ -345,7 +309,6 @@ def simpson1_3(fn,a,b,n):
     i=a+h
     cont=1
     while (i<b):
-        print("i",i)
         prs.addVariable("x",i)
         if(cont%2==0):
             parSum+=prs.evaluate()
@@ -390,10 +353,115 @@ def eulerSimple(df,xn,yn,h,xf):
     h=float(h)
     xt=xn
     yt=yn
+    xlist=[]
+    ylist=[]
     while(xt<xf):
         prs.addVariable("x",xt)
         prs.addVariable("y",yt)
+        xlist.append(xt)
+        ylist.append(yt)
         yt=yt+h*(prs.evaluate())
-        print(yt)
-        xt=round(xt+h,15)    
-    return yt
+        xt=round(xt+h,15)
+    xlist.append(xt)
+    ylist.append(yt)
+    return xlist,ylist
+
+def eulerHeun(df,xn,yn,h,xf):
+    prs=SimpleParse()
+    prs.setEc(df)
+    xt=xn
+    yt=yn
+    xlist=[]
+    ylist=[]
+    while(xt<xf):
+        prs.addVariable("x",xt)
+        prs.addVariable("y",yt)
+        xlist.append(xt)
+        ylist.append(yt)
+        f1=prs.evaluate()
+        yt1=yt+h*f1
+        xt1=round(xt+h,15)
+        prs.addVariable("x",xt1)
+        prs.addVariable("y",yt1)
+        f2=prs.evaluate()
+        yt=yt+(h/2)*(f1+f2)
+        xt=xt1
+    xlist.append(xt)
+    ylist.append(yt)
+    return xlist,ylist
+
+def rungeKutta(df,xn,yn,h,xf):
+    prs=SimpleParse()
+    prs.setEc(df)
+    xt=xn
+    yt=yn
+    xlist=[]
+    ylist=[]
+    while(xt<xf):
+        xlist.append(xt)
+        ylist.append(yt)
+
+        prs.addVariable("x",xt)
+        prs.addVariable("y",yt)
+        k1=prs.evaluate()
+        
+        prs.addVariable("x",xt+(0.5*h))
+        prs.addVariable("y",yt+(0.5*k1*h))
+        k2=prs.evaluate()
+
+        prs.addVariable("x",xt+(0.5*h))
+        prs.addVariable("y",yt+(0.5*k2*h))
+        k3=prs.evaluate()
+
+        prs.addVariable("x",xt+h)
+        prs.addVariable("y",yt+(k3*h))
+        k4=prs.evaluate()
+
+        yt=yt+(1/6)*(k1+(2*k2)+(2*k3)+k4)*h
+        xt=round(xt+h,15)
+
+    xlist.append(xt)
+    ylist.append(yt)
+    return xlist,ylist
+
+def dormandPrince(df,xn,yn,h,xf):
+    prs=SimpleParse()
+    prs.setEc(df)
+    xt=xn
+    yt=yn
+    xlist=[]
+    ylist=[]
+    while(xt<xf):
+        xlist.append(xt)
+        ylist.append(yt)
+
+        prs.addVariable("x",xt)
+        prs.addVariable("y",yt)
+        k1=h*prs.evaluate()
+        
+        prs.addVariable("x",xt+((1/5)*h))
+        prs.addVariable("y",yt+((1/5)*k1))
+        k2=h*prs.evaluate()
+
+        prs.addVariable("x",xt+((3/10)*h))
+        prs.addVariable("y",yt+((3/40)*k1)+((9/40)*k2))
+        k3=h*prs.evaluate()
+
+        prs.addVariable("x",xt+((4/5)*h))
+        prs.addVariable("y",yt+((44/45)*k1)-((56/15)*k2)+((32/9)*k3))
+        k4=h*prs.evaluate()
+
+        prs.addVariable("x",xt+((8/9)*h))
+        prs.addVariable("y",yt+((19372/6561)*k1)-((25360/2187)*k2)+((64448/6561)*k3)-((212/729)*k4))
+        k5=h*prs.evaluate()
+
+        prs.addVariable("x",xt+h)
+        prs.addVariable("y",yt+((9017/3168)*k1)-((355/33)*k2)-((46732/5247)*k3)+((49/176)*k4)-((5103/18656)*k5))
+        k6=h*prs.evaluate()
+
+        yt=yt+((35/384)*k1)+((500/1113)*k3)+((125/192)*k4)-((2187/6784)*k5)+((11/84)*k6)  
+        xt=round(xt+h,15)
+
+    xlist.append(xt)
+    ylist.append(yt)
+    return xlist,ylist

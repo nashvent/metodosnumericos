@@ -40,10 +40,11 @@ class inicio(QMainWindow):
         if checkExpression(comando):
             self.plainTextEdit.appendPlainText(comando)
             data=self.checkComando(comando)    
-            self.addVariableLocal(data)
-            self.registroHistorial(comando)
-            res=data[1]
-            self.plainTextEdit.appendPlainText("=> "+str(res)+"\n")
+            if(data[1]!=""):
+                self.addVariableLocal(data)
+                self.registroHistorial(comando)
+                res=data[1]
+                self.plainTextEdit.appendPlainText("=> "+str(res)+"\n")
             self.lineEdit.setText("")
             self.updateVar()
         
@@ -64,6 +65,7 @@ class inicio(QMainWindow):
             elif comando[:8]=="decimal=":
                 self.prs.decimal=float(vVar)
             elif(vVar[0]=="'"):
+                vVar=vVar.replace("'","")
                 tVar="string"
             elif(isarray(vVar)):
                 vVar=self.runFunc(vVar)
@@ -76,9 +78,13 @@ class inicio(QMainWindow):
         return nVar,vVar,tVar
 
     def runFunc(self,funcion):
-        self.prs.setEc(funcion)
-        self.prs.addVarFromList(self.variablesLocales)
-        return self.prs.evaluate()
+        if(funcion=="clear"):
+            self.plainTextEdit.clear()
+            return ""
+        else:
+            self.prs.setEc(funcion)
+            self.prs.addVarFromList(self.variablesLocales)
+            return self.prs.evaluate()
 
     def addVariableLocal(self,data):
         if(data[0]!='' and data[2]!=''):
