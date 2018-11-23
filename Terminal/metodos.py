@@ -345,6 +345,7 @@ def simpson1_3(fn,a,b,n):
     i=a+h
     cont=1
     while (i<b):
+        print("i",i)
         prs.addVariable("x",i)
         if(cont%2==0):
             parSum+=prs.evaluate()
