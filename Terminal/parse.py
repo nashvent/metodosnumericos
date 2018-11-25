@@ -15,8 +15,8 @@ def changeSyntax(expr):
 class ParseConsola:
     variables={}
     ecuation=""
-    error="0.00001"
-    decimal="7"
+    error=0.0001
+    decimal=4
     def addVariable(self,vname,vval):
         self.variables[vname]=vval
     def setEc(self,ec):        
@@ -25,7 +25,7 @@ class ParseConsola:
     def evaluate(self):    
         if(checkExpression(self.ecuation)):
             self.ecuation=changeSyntax(self.ecuation)
-            print(self.ecuation)
+            #print(self.ecuation)
             var=self.variables.copy()
             self.addStaticVar(var)         
             try:
@@ -49,18 +49,18 @@ class ParseConsola:
             if n==0:
                 return mt.biseccion(a,b,fn,self.error)
             elif n==1:
-                return "Falsapos"
+                return mt.falsapos(a,b,fn,self.error)
             elif n==2:
-                return "sec"
+                return mt.secante(a,fn,self.error)
             else:
                 return "desconocido"
         else:
             if n==0:
-                return "bissec"
+                return mt.tbiseccion(fn,a,b,self.error)
             elif n==1:
-                return "Falsapos"
+                return mt.tfalsapos(fn,a,b,self.error)
             elif n==2:
-                return "sec"
+                return mt.tsecante(fn,a,b,self.error)
             else:
                 return "desconocido"
 

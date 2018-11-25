@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt 
 import matrix 
 from mparse import SimpleParse 
+from decimal import *
+
 plt.style.use('seaborn-whitegrid')
 
 getSign = lambda a: (a>0) - (a<0)
@@ -19,34 +21,35 @@ def bolzano(fn,a,b):
     return False
 
 def biseccion(a,b,fn,error):
-    print("Emtro BISECCION")
+    if(bolzano(fn,a,b)==False):
+        return "no bolzano"
     maxIt=100
     cont=0
     xn=0
-    xprev=0
+    xprev=10000
     historial=[]
     prs=SimpleParse()
     prs.setEc(fn)
-    error=float(error)    
     while(cont<maxIt):  
         xn=(a+b)/2
-        print("xn",xn)
         prs.addVariable("x",xn)
         fxn=prs.evaluate()
         prs.addVariable("x",a)
         fa=prs.evaluate()
         nerror=abs(xn-xprev)
+        #print(a,b,xn,nerror)
         historial.append([a,b,xn,nerror])
-        print("fa",fa)
-        print("fxn",fxn)
+        if(fa==0):
+            xn=fa
+            break
+        if(fxn==0):
+            break
+
         if (fa*fxn)<0:
             b=xn
         else:
-            a=xn
-        
+            a=xn        
         xprev=xn
-        print("nerror",nerror)
-        print("error",error)
         if (nerror<error):
             break
         cont+=1
@@ -57,10 +60,10 @@ def falsapos(a,b,fn,error):
     cont=0
     xn=0
     xprev=0
-    x=0.0
     historial=[]
     prs=SimpleParse()
     prs.setEc(fn)    
+    error=Decimal(error)
     while(cont<maxIt):  
         prs.addVariable("x",a)
         fa=prs.evaluate()
@@ -79,36 +82,107 @@ def falsapos(a,b,fn,error):
         if (nerror<error):
             break
         cont+=1
-    return xn,historial
+    return xn #,historial
 
 def secante(xn,fn,error):
-    errorTemp=1000000
+    errorTemp=10000
     maxIt=100
     cont=0
-    h=error/10
-    xAnt=xn
+    h=0.001
+    xnv=xn
     prs=SimpleParse()
     prs.setEc(fn)
     historial=[]
     historial.append([xn,0.0])
+    xprev=0
     while(errorTemp>error and maxIt>cont):
-        prs.addVariable("x",xAnt)
+        prs.addVariable("x",xnv)
         resfn=prs.evaluate()
-        prs.addVariable("x",xAnt+h)
+        prs.addVariable("x",xnv+h)
         resfxh=prs.evaluate()
-        prs.addVariable("x",xAnt-h)
+        prs.addVariable("x",xnv-h)
         resfx_h=prs.evaluate()
         if((resfxh-resfx_h)==0):
-            print("division entre zero")
+            return "Error /0"
             break
-        x=xAnt-((2*h*resfn)/(resfxh-resfx_h))
-        errorTemp=abs(xAnt-x)
-        historial.append([xAnt,errorTemp])
-        xAnt=x
+        xprev=xnv
+        xnv=xprev-((2*h*resfn)/(resfxh-resfx_h))
+        errorTemp=abs(xprev-xnv)
+        historial.append([xnv,errorTemp])
         if(errorTemp<error):
             break  
         cont+=1
-    return x,historial
+    return xnv#,historial
+
+def tsecante(fn1,pi,pf,error):
+    partes=30
+    tamRango=abs(pf-pi)
+    sizePart=tamRango/30
+    tempPi=pi
+    xInter=[]
+    #print(fnT)
+    for i in range(partes-1):
+        nTempPi=tempPi+sizePart
+        if(bolzano(fn1,tempPi,nTempPi)):
+            result=secante(tempPi,fn1,error)
+            xInter.append(result)       
+        tempPi=nTempPi
+        
+    yInter=getY(fn1,xInter)
+    puntosInter=[]
+    for cnt in range(len(xInter)):
+        puntosInter.append([xInter[cnt],yInter[cnt]])
+    fList=[fn1]
+    graphList(fList,puntosInter,pi,pf)
+    return puntosInter
+
+def tbiseccion(fn1,pi,pf,error):
+    partes=30
+    tamRango=abs(pf-pi)
+    sizePart=tamRango/30
+    tempPi=pi
+    xInter=[]
+    for i in range(partes-1):
+        nTempPi=tempPi+sizePart
+        if(bolzano(fn1,tempPi,nTempPi)):
+            result=biseccion(tempPi,nTempPi,fn1,error)
+            xInter.append(result)       
+        tempPi=nTempPi
+        
+    yInter=getY(fn1,xInter)
+    puntosInter=[]
+    for cnt in range(len(xInter)):
+        puntosInter.append([xInter[cnt],yInter[cnt]])
+    fList=[fn1]
+    graphList(fList,puntosInter,pi,pf)
+    return puntosInter
+
+def tfalsapos(fn1,pi,pf,error):
+    partes=30
+    tamRango=abs(pf-pi)
+    sizePart=tamRango/30
+    tempPi=pi
+    xInter=[]
+    #print(fnT)
+    for i in range(partes-1):
+        nTempPi=tempPi+sizePart
+        if(bolzano(fn1,tempPi,nTempPi)):
+            result=falsapos(tempPi,nTempPi,fn1,error)
+            xInter.append(result)       
+        """else:
+            print("No cumple bolzano")
+        """
+        tempPi=nTempPi
+        
+    yInter=getY(fn1,xInter)
+    puntosInter=[]
+    for cnt in range(len(xInter)):
+        puntosInter.append([xInter[cnt],yInter[cnt]])
+    fList=[fn1]
+    graphList(fList,puntosInter,pi,pf)
+    return puntosInter
+
+
 
 def polyroot(raices):
     rpoly=""
@@ -229,21 +303,7 @@ def newtonRaphsonG(NLx,LFn,Lx,err):
             break       
     
     return Lx
-"""
-def selectMetodC(op,a,b,fn,error):
-    if(op==0):
-        return biseccion(a,b,fn,error)
-    elif(op==1):
-        return falsapos(a,b,fn,error)
 
-def selectMetodA(op,xn,fn,dfn,error):
-    if(op==0):
-        return newton(xn,fn,dfn,error)
-    elif(op==1):
-        return secante(xn,fn,error)
-    elif(op==2):
-        return puntofijo(xn,fn,error)
-"""
 def graphList(fList,pList,pi,pf):
     pi=pi-2
     pf=pf+2
@@ -256,33 +316,6 @@ def graphList(fList,pList,pi,pf):
     plt.axis([pi, pf, pi, pf])
     plt.show() 
     
-def interseccion(fn1,fn2,pi,pf,error):
-    partes=10
-    tamRango=abs(pf-pi)
-    sizePart=tamRango/10
-    tempPi=pi
-    fnT=fn1+"-("+fn2+")"
-    xInter=[]
-    #print(fnT)
-    for i in range(partes-1):
-        nTempPi=tempPi+sizePart
-        if(bolzano(fnT,tempPi,nTempPi)):
-            result=secante(tempPi,fnT,error)
-            xInter.append(result[0])       
-        else:
-            print("No cumple bolzano")
-        tempPi=nTempPi
-        
-    yInter=getY(fn1,xInter)
-    puntosInter=[]
-    for cnt in range(len(xInter)):
-        puntosInter.append([xInter[cnt],yInter[cnt]])
-    fList=[fn1,fn2]
-    graphList(fList,puntosInter,pi,pf)
-    return puntosInter
-
-    
-
 def trapecio(fn,a,b,n):
     h=(b-a)/n
     prs=SimpleParse()

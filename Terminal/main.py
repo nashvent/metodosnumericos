@@ -63,7 +63,7 @@ class inicio(QMainWindow):
             if comando[:6]=='error=':
                 self.prs.error=float(vVar)    
             elif comando[:8]=="decimal=":
-                self.prs.decimal=float(vVar)
+                self.prs.decimal=int(vVar)
             elif(vVar[0]=="'"):
                 vVar=vVar.replace("'","")
                 tVar="string"
@@ -84,7 +84,13 @@ class inicio(QMainWindow):
         else:
             self.prs.setEc(funcion)
             self.prs.addVarFromList(self.variablesLocales)
-            return self.prs.evaluate()
+            respFunc=self.prs.evaluate()
+
+            if(type(respFunc).__name__=="float"):
+                forstr="%."+str(self.prs.decimal)+"f"
+                return forstr%respFunc
+    
+            return respFunc
 
     def addVariableLocal(self,data):
         if(data[0]!='' and data[2]!=''):
@@ -99,7 +105,7 @@ class inicio(QMainWindow):
                 self.variablesLocales[data[0]]=data[1]   
 
     def updateVar(self):
-        print("updateVar",self.variablesLocales)
+        #print("updateVar",self.variablesLocales)
         self.tableVar.setRowCount(len(self.variablesLocales))
         it=0
         for key,val in self.variablesLocales.items():
