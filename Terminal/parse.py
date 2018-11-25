@@ -37,6 +37,8 @@ class ParseConsola:
         lt["error"]=self.error
         lt["decimal"]=self.decimal
         lt["root"]=self.froot
+        lt["plot2d"]=self.plot2d
+        lt["polyroot"]=mt.polyroot
 
     def addVarFromList(self,lista):
         self.variables=lista
@@ -64,6 +66,7 @@ class ParseConsola:
             else:
                 return "desconocido"
 
+    def plot2d(self,f,a,b,ncol):
+        return mt.graph(f,a,b,ncol)
 
-
-
+    

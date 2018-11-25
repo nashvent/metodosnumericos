@@ -4,8 +4,10 @@ import matplotlib.pyplot as plt
 import matrix 
 from mparse import SimpleParse 
 from decimal import *
+plt.show(block=True)
 
 plt.style.use('seaborn-whitegrid')
+mtLista=[]
 
 getSign = lambda a: (a>0) - (a<0)
 
@@ -226,12 +228,15 @@ def getY(formula,x):
         y.append(yT)
     return y
 
-def graph(formula,i,f):
+def graph(formula,i,f,ncolor):
     prs=SimpleParse()
     x = np.linspace(i,f,100)
     prs.setEc(formula)
     y=getY(formula,x) 
-    plt.plot(x, y)
+    plt.plot(x, y,color=ncolor)
+    mtLista.append([x,y])
+    #for i in range(len(mtLista)):
+    #    plt.plot(mtLista[i][0],mtLista[i][1],color=ncolor)
     plt.axis([i, f, i+1, f])
     plt.show()
 
