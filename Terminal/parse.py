@@ -52,6 +52,7 @@ class ParseConsola:
         lt["senl"]=self.senl
         lt["integral"]=self.fintegral
         lt["area"]=self.area
+        lt["area2"]=self.area2
         lt["edo"]=self.edo
         lt["intersection"]=self.fintersec
         #lt["grapharea"]=self.graphArea
@@ -169,6 +170,22 @@ class ParseConsola:
         else:
             areaT+=abs(inte1-inte2)
         self.graphArea([func1,func2],a,b)
+        return areaT
+    
+    def area2(self,func1,a,b):
+        #resp=mt.simpson1_3(func1,a,b,self.nintegral)
+        pntInter=mt.tsecante(func1,a,b,self.error)
+        xprev=a
+        areaT=0
+    
+        for i in range(len(pntInter)):
+            inte1=mt.simpson1_3(func1,xprev,pntInter[i],self.nintegral)
+            areaT+=abs(inte1)
+            xprev=pntInter[i]
+
+        inte1=mt.simpson1_3(func1,xprev,b,self.nintegral)
+        areaT+=abs(inte1)
+        self.graphArea([func1],a,b)
         return areaT
 
     def graphArea(self,formula,i,f):
