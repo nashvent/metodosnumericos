@@ -1,0 +1,14 @@
+variables fijas:
+	decimal
+	error
+
+root('x*y',a,b,True,n=0)
+intersection(f,g,a,b,'red','blue')
+plot2d(f,a,b,color)
+polyroot([3,4,5])
+polynomial([2,3],[4,9])
+senl(['x','y'],[f1,f2],[3,0])
+integral(f,a,b,n=0)
+area(f,g,a,b)
+edo(df,xo,yo,xn,n=0)
+

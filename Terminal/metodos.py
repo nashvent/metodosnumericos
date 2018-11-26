@@ -379,7 +379,7 @@ def eulerSimple(df,xn,yn,h,xf):
         xlist.append(xt)
         ylist.append(yt)
         yt=yt+h*(prs.evaluate())
-        xt=round(xt+h,15)
+        xt=round(xt+h,10)
     xlist.append(xt)
     ylist.append(yt)
     return xlist,ylist
@@ -398,7 +398,7 @@ def eulerHeun(df,xn,yn,h,xf):
         ylist.append(yt)
         f1=prs.evaluate()
         yt1=yt+h*f1
-        xt1=round(xt+h,15)
+        xt1=round(xt+h,10)
         prs.addVariable("x",xt1)
         prs.addVariable("y",yt1)
         f2=prs.evaluate()
@@ -436,7 +436,7 @@ def rungeKutta(df,xn,yn,h,xf):
         k4=prs.evaluate()
 
         yt=yt+(1/6)*(k1+(2*k2)+(2*k3)+k4)*h
-        xt=round(xt+h,15)
+        xt=round(xt+h,10)
 
     xlist.append(xt)
     ylist.append(yt)
