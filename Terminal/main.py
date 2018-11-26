@@ -39,6 +39,13 @@ class inicio(QMainWindow):
         comando=self.lineEdit.text()
         if checkExpression(comando):
             self.plainTextEdit.appendPlainText(comando)
+            if(comando[:6]=="plot2d"):
+                print("")
+                self.plainTextEdit.appendPlainText("=> plot\n")
+                self.registroHistorial(comando)
+                self.lineEdit.setText("")
+                self.checkComando(comando)
+                return
             data=self.checkComando(comando)    
             if(data[1]!=""):
                 self.addVariableLocal(data)

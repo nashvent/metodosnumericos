@@ -129,13 +129,17 @@ def tsecante(fn1,pi,pf,error):
             result=secante(tempPi,fn1,error)
             xInter.append(result)       
         tempPi=nTempPi
-        
+    """    
     yInter=getY(fn1,xInter)
     puntosInter=[]
     for cnt in range(len(xInter)):
         puntosInter.append([xInter[cnt],yInter[cnt]])
-    fList=[fn1]
-    graphList(fList,puntosInter,pi,pf)
+    fList=[fn1]"""
+    puntosInter=[]
+    for cnt in range(len(xInter)):
+        puntosInter.append([xInter[cnt],0])
+
+    #graphList(fList,puntosInter,pi,pf)
     return puntosInter
 
 def tbiseccion(fn1,pi,pf,error):
@@ -151,12 +155,16 @@ def tbiseccion(fn1,pi,pf,error):
             xInter.append(result)       
         tempPi=nTempPi
         
-    yInter=getY(fn1,xInter)
+    """ yInter=getY(fn1,xInter)
     puntosInter=[]
     for cnt in range(len(xInter)):
         puntosInter.append([xInter[cnt],yInter[cnt]])
-    fList=[fn1]
-    graphList(fList,puntosInter,pi,pf)
+    fList=[fn1]"""
+    puntosInter=[]
+    for cnt in range(len(xInter)):
+        puntosInter.append([xInter[cnt],0])
+
+    #graphList(fList,puntosInter,pi,pf)
     return puntosInter
 
 def tfalsapos(fn1,pi,pf,error):
@@ -176,12 +184,16 @@ def tfalsapos(fn1,pi,pf,error):
         """
         tempPi=nTempPi
         
-    yInter=getY(fn1,xInter)
+    """yInter=getY(fn1,xInter)
     puntosInter=[]
     for cnt in range(len(xInter)):
         puntosInter.append([xInter[cnt],yInter[cnt]])
-    fList=[fn1]
-    graphList(fList,puntosInter,pi,pf)
+    fList=[fn1]"""
+    puntosInter=[]
+    for cnt in range(len(xInter)):
+        puntosInter.append([xInter[cnt],0])
+
+    #graphList(fList,puntosInter,pi,pf)
     return puntosInter
 
 
@@ -218,27 +230,6 @@ def lagrange(xLista,yLista):
             prodStr+="+"
     return prodStr 
 
-def getY(formula,x):
-    prs=SimpleParse()
-    y=[]
-    prs.setEc(formula)
-    for i in x:
-        prs.addVariable("x",i)
-        yT=prs.evaluate()
-        y.append(yT)
-    return y
-
-def graph(formula,i,f,ncolor):
-    prs=SimpleParse()
-    x = np.linspace(i,f,100)
-    prs.setEc(formula)
-    y=getY(formula,x) 
-    plt.plot(x, y,color=ncolor)
-    mtLista.append([x,y])
-    #for i in range(len(mtLista)):
-    #    plt.plot(mtLista[i][0],mtLista[i][1],color=ncolor)
-    plt.axis([i, f, i+1, f])
-    plt.show()
 
 def listToDict(Ln,Lv):
     dicc={}
@@ -309,17 +300,6 @@ def newtonRaphsonG(NLx,LFn,Lx,err):
     
     return Lx
 
-def graphList(fList,pList,pi,pf):
-    pi=pi-2
-    pf=pf+2
-    xList = np.linspace(pi,pf,100)
-    for i in range(len(fList)):
-        yList=getY(fList[i],xList)
-        plt.plot(xList, yList)
-    for p in pList:
-        plt.plot(p[0],p[1],'ro')
-    plt.axis([pi, pf, pi, pf])
-    plt.show() 
     
 def trapecio(fn,a,b,n):
     h=(b-a)/n

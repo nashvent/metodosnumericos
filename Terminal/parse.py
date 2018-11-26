@@ -1,6 +1,11 @@
 from math import *
 import metodos as mt
-
+import numpy as np  
+import matplotlib.pyplot as plt 
+import matrix 
+from mparse import SimpleParse
+import matplotlib 
+matplotlib.interactive(False)
 
 def checkExpression(expr):
     if(expr.isspace() or expr==''):
@@ -37,7 +42,7 @@ class ParseConsola:
         lt["error"]=self.error
         lt["decimal"]=self.decimal
         lt["root"]=self.froot
-        lt["plot2d"]=self.plot2d
+        lt["plot2d"]=self.graph
         lt["polyroot"]=mt.polyroot
 
     def addVarFromList(self,lista):
@@ -66,7 +71,37 @@ class ParseConsola:
             else:
                 return "desconocido"
 
-    def plot2d(self,f,a,b,ncol):
-        return mt.graph(f,a,b,ncol)
 
-    
+    def graph(self,formula,i,f,ncolor):
+        prs=SimpleParse()
+        x = np.linspace(i,f,100)
+        prs.setEc(formula)
+        y=getY(formula,x) 
+        plt.plot(x, y,color=ncolor)
+        plt.axis([i, f, i+1, f])
+        #plt.show(block=True)
+        plt.show()
+
+    def graphList(self,fList,pList,pi,pf):
+        pi=pi-2
+        pf=pf+2
+        xList = np.linspace(pi,pf,100)
+        for i in range(len(fList)):
+            yList=getY(fList[i],xList)
+            plt.plot(xList, yList)
+        for p in pList:
+            plt.plot(p[0],p[1],'ro')
+        plt.axis([pi, pf, pi, pf])
+        plt.show() 
+
+
+
+def getY(formula,x):
+    prs=SimpleParse()
+    y=[]
+    prs.setEc(formula)
+    for i in x:
+        prs.addVariable("x",i)
+        yT=prs.evaluate()
+        y.append(yT)
+    return y
