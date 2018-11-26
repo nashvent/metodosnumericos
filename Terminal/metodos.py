@@ -140,7 +140,7 @@ def tsecante(fn1,pi,pf,error):
         puntosInter.append([xInter[cnt],0])
 
     #graphList(fList,puntosInter,pi,pf)
-    return puntosInter
+    return xInter
 
 def tbiseccion(fn1,pi,pf,error):
     partes=30
@@ -165,7 +165,7 @@ def tbiseccion(fn1,pi,pf,error):
         puntosInter.append([xInter[cnt],0])
 
     #graphList(fList,puntosInter,pi,pf)
-    return puntosInter
+    return xInter
 
 def tfalsapos(fn1,pi,pf,error):
     partes=30
@@ -194,7 +194,7 @@ def tfalsapos(fn1,pi,pf,error):
         puntosInter.append([xInter[cnt],0])
 
     #graphList(fList,puntosInter,pi,pf)
-    return puntosInter
+    return xInter
 
 
 

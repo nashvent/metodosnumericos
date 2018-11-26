@@ -44,6 +44,7 @@ class ParseConsola:
         lt["root"]=self.froot
         lt["plot2d"]=self.graph
         lt["polyroot"]=mt.polyroot
+        
 
     def addVarFromList(self,lista):
         self.variables=lista
@@ -52,24 +53,35 @@ class ParseConsola:
     #### Zona de metodos
 
     def froot(self,fn,a,b,all,n=0):
+        
         if(all==False):
             if n==0:
-                return mt.biseccion(a,b,fn,self.error)
+                resp=mt.biseccion(a,b,fn,self.error)
             elif n==1:
-                return mt.falsapos(a,b,fn,self.error)
+                resp=mt.falsapos(a,b,fn,self.error)
             elif n==2:
-                return mt.secante(a,fn,self.error)
+                resp=mt.secante(a,fn,self.error)
             else:
                 return "desconocido"
         else:
             if n==0:
-                return mt.tbiseccion(fn,a,b,self.error)
+                resp=mt.tbiseccion(fn,a,b,self.error)
             elif n==1:
-                return mt.tfalsapos(fn,a,b,self.error)
+                resp=mt.tfalsapos(fn,a,b,self.error)
             elif n==2:
-                return mt.tsecante(fn,a,b,self.error)
+                resp=mt.tsecante(fn,a,b,self.error)
             else:
                 return "desconocido"
+        
+        if(type(resp).__name__=="float"):
+            nresp=[resp]
+        else:
+            nresp=resp
+        nlresp=[]
+        for i in range(len(nresp)):
+            nlresp.append([nresp[i],0])
+        self.graphList([fn],nlresp,a,b)
+        return resp
 
 
     def graph(self,formula,i,f,ncolor):
@@ -92,7 +104,7 @@ class ParseConsola:
         for p in pList:
             plt.plot(p[0],p[1],'ro')
         plt.axis([pi, pf, pi, pf])
-        plt.show() 
+        plt.show(block=True) 
 
 
 
