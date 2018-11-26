@@ -312,7 +312,7 @@ def interseccion(fn1,fn2,pi,pf,error):
     for cnt in range(len(xInter)):
         puntosInter.append([xInter[cnt],yInter[cnt]])
     fList=[fn1,fn2]
-    graphList(fList,puntosInter,pi,pf)
+    #graphList(fList,puntosInter,pi,pf)
     return puntosInter
 
 """def propagacion(LFn,Lerr,ec):
