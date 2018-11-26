@@ -289,10 +289,10 @@ def newtonRaphsonG(NLx,LFn,Lx,err):
         respTemp=matrix.multVectorMatrix(jaco,LFxn)
         LxAnt=Lx
         Lx=matrix.restaArray(Lx,respTemp)
-        print("Lx",Lx)
+        #print("Lx",Lx)
         errorAnt=errorTemp
         errorTemp=errorNR(TLx,Lx)
-        if(abs(errorAnt-errorTemp)>1):
+        if(abs(errorAnt-errorTemp)>10):
             print("Divergente")
             return LxAnt
         if(errorTemp<err):
@@ -300,7 +300,6 @@ def newtonRaphsonG(NLx,LFn,Lx,err):
     
     return Lx
 
-    
 def trapecio(fn,a,b,n):
     h=(b-a)/n
     prs=SimpleParse()
@@ -309,7 +308,8 @@ def trapecio(fn,a,b,n):
     sum=0
     while(i<b):
         prs.addVariable("x",i)
-        sum+=prs.evaluate()
+        tsum=prs.evaluate()
+        sum+=tsum
         i+=h
     prs.addVariable("x",a)
     fa=prs.evaluate()
@@ -483,3 +483,37 @@ def dormandPrince(df,xn,yn,h,xf):
     xlist.append(xt)
     ylist.append(yt)
     return xlist,ylist
+
+
+def getY(formula,x):
+    prs=SimpleParse()
+    y=[]
+    prs.setEc(formula)
+    for i in x:
+        prs.addVariable("x",i)
+        yT=prs.evaluate()
+        y.append(yT)
+    return y
+
+def interseccion(fn1,fn2,pi,pf,error):
+    partes=10
+    tamRango=abs(pf-pi)
+    sizePart=tamRango/10
+    tempPi=pi
+    fnT=fn1+"-("+fn2+")"
+    xInter=[]
+    #print(fnT)
+    for i in range(partes-1):
+        nTempPi=tempPi+sizePart
+        if(bolzano(fnT,tempPi,nTempPi)):
+            result=secante(tempPi,fnT,error)
+            xInter.append(result)       
+        tempPi=nTempPi
+        
+    yInter=getY(fn1,xInter)
+    puntosInter=[]
+    for cnt in range(len(xInter)):
+        puntosInter.append([xInter[cnt],yInter[cnt]])
+    fList=[fn1,fn2]
+    #graphList(fList,puntosInter,pi,pf)
+    return puntosInter
